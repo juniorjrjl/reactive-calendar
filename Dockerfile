@@ -1,0 +1,11 @@
+FROM gradle:7.4-jdk17
+
+RUN apt-get update && apt-get install -qq -y --no-install-recommends
+
+ENV INSTALL_PATH /reactive-calendar
+
+RUN mkdir -p $INSTALL_PATH
+
+WORKDIR $INSTALL_PATH
+
+COPY . .

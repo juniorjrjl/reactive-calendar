@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    command: bash start-dev.sh
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    environment:
+      - DB_USER=reactive-calendar
+      - DB_PASSWORD=reactive-calendar
+      - DB_PORT=27017
+      - DB=reactive-calendar
+      - GRADLE_USER_HOME=/box
+      - SERVER_PORT=8080
+      - SPRING_PROFILE_ACTIVE=dev
+    volumes:
+      - .:/reactive-calendar
+      - box:/box
+    depends_on:
+      - db
+  db:
+    image: mongo:5.0.6
+    environment:
+      - MONGO_INTDB_ROOT_USERNAME=reactive-calendar
+      - MONGO_INTDB_ROOT_PASSWORD=reactive-calendar
+      - MONGO_INTDB_DATABASE=reactive-calendar
+    ports:
+      - "27017:27017"
+  box:
+    image: busybox
+    volumes:
+      - /box
+
+volumes:
+  db:
+  box:

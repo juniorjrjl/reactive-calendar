@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    command: bash start-test.sh
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    environment:
+      - GRADLE_USER_HOME=/box
+      - SERVER_PORT=8080
+      - SPRING_PROFILE_ACTIVE=test
+    volumes:
+      - .:/reactive-calendar
+      - box:/box
+  box:
+    image: busybox
+    volumes:
+      - /box
+
+volumes:
+  box:
