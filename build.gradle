@@ -18,28 +18,39 @@ java {
 	targetCompatibility = JavaVersion.VERSION_17
 }
 
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
 repositories {
 	mavenCentral()
 }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
-	implementation 'org.springframework.boot:spring-boot-starter-hateoas'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.projectlombok:lombok'
 	implementation "org.mapstruct:mapstruct:$mapstructVersion"
+	implementation 'org.apache.commons:commons-lang3:3.12.0'
+	implementation 'commons-collections:commons-collections:3.2.2'
+    implementation 'org.jetbrains:annotations:20.1.0'
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
 
-	annotationProcessor "org.mapstruct:mapstruct:$mapstructVersion"
+
+	annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
 	annotationProcessor 'org.projectlombok:lombok'
 
+	testImplementation 'org.mongodb:mongodb-driver-sync'
+	testImplementation 'org.mongodb:bson'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 	testImplementation 'org.projectlombok:lombok'
 	testImplementation 'com.github.javafaker:javafaker:1.0.2'
-	testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:3.4.3'
+	testRuntimeOnly 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
 	implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.6'
-
 	testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
