@@ -71,7 +71,7 @@ public class UserControllerUpdateTest {
     @Test
     void updateTest(){
         var request = UserRequestFactoryBot.builder().build();
-        requestBuilder.withUri(uriBuilder -> uriBuilder.pathSegment("{id}").build(userInserted.getId()))
+        requestBuilder.withUri(uriBuilder -> uriBuilder.pathSegment("{id}").build(userInserted.id()))
                 .withBody(request)
                 .generateRequestWithSimpleBody()
                 .doPut()
@@ -79,9 +79,9 @@ public class UserControllerUpdateTest {
                 .assertBody(response -> {
                     assertThat(response).isNotNull();
                     assertThat(response).hasNoNullFieldsOrProperties();
-                    assertThat(response.getId()).isEqualTo(userInserted.getId());
-                    assertThat(response.getName()).isEqualTo(request.getName());
-                    assertThat(response.getEmail()).isEqualTo(request.getEmail());
+                    assertThat(response.id()).isEqualTo(userInserted.id());
+                    assertThat(response.name()).isEqualTo(request.name());
+                    assertThat(response.email()).isEqualTo(request.email());
                 });
     }
 

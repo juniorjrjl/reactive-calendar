@@ -16,7 +16,7 @@ public interface GuestMapper {
     default Set<GuestDTO> toDTOSet(final List<UserDocument> documents, final Set<GuestDTO> dto){
         Set<GuestDTO> guests = new HashSet<>();
         documents.forEach(d ->dto.stream()
-                    .filter(guest -> guest.email().equals(d.getEmail()))
+                    .filter(guest -> guest.email().equals(d.email()))
                     .map(GuestDTO::type).findFirst()
                             .ifPresentOrElse(type -> guests.add(toDTO(d, type)), () -> {}));
         return guests;

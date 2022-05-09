@@ -40,19 +40,19 @@ public class AppointmentService {
                 .collectList()
                 .map(u -> dto.toBuilder().guests(guestMapper.toDTOSet(u, dto.guests())).build())
                 .flatMap(appointmentDTO -> appointmentRepository.save(appointmentMapper.toDocument(appointmentDTO))
-                        .map(document -> appointmentDTO.toBuilder().id(document.getId()).build()))
+                        .map(document -> appointmentDTO.toBuilder().id(document.id()).build()))
                 .flatMap(this::notifyGuests);
     }
 
     private Mono<UserDocument> userAlreadyHasAppointmentInInterval(final UserDocument user,
                                                                    final OffsetDateTime startIn,
                                                                    final OffsetDateTime endIn){
-        return appointmentRepository.findUserAppointmentsInInterval(user.getId(), startIn, endIn)
-                .doFirst(() -> log.info("==== Checking if user with id {} has another appointment between {} and {}", user.getId(), startIn, endIn))
+        return appointmentRepository.findUserAppointmentsInInterval(user.id(), startIn, endIn)
+                .doFirst(() -> log.info("==== Checking if user with id {} has another appointment between {} and {}", user.id(), startIn, endIn))
                 .collectList()
                 .filter(CollectionUtils::isEmpty)
                 .switchIfEmpty(Mono.defer(() -> Mono.error(new ConflictException(USER_ALREADY_HAS_APPOINTMENT_IN_INTERVAL
-                        .params(user.getEmail())
+                        .params(user.email())
                         .getMessage()))))
                 .map(appointments -> user);
     }

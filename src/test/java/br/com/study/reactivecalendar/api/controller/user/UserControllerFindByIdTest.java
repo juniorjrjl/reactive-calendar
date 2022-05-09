@@ -62,16 +62,16 @@ public class UserControllerFindByIdTest {
 
     @Test
     void findByIdTest(){
-        requestBuilder.withUri(uriBuilder -> uriBuilder.pathSegment("{id}").build(userInserted.getId()))
+        requestBuilder.withUri(uriBuilder -> uriBuilder.pathSegment("{id}").build(userInserted.id()))
                 .generateRequestWithSimpleBody()
                 .doGet()
                 .isHttpStatusIsOk()
                 .assertBody(response -> {
                     assertThat(response).isNotNull();
                     assertThat(response).hasNoNullFieldsOrProperties();
-                    assertThat(ObjectId.isValid(response.getId())).isTrue();
-                    assertThat(response.getName()).isEqualTo(userInserted.getName());
-                    assertThat(response.getEmail()).isEqualTo(userInserted.getEmail());
+                    assertThat(ObjectId.isValid(response.id())).isTrue();
+                    assertThat(response.name()).isEqualTo(userInserted.name());
+                    assertThat(response.email()).isEqualTo(userInserted.email());
                 });
     }
 

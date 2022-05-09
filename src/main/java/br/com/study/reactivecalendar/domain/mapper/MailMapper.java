@@ -43,7 +43,7 @@ public interface MailMapper {
                 guests.stream().map(GuestDTO::email).toArray(String[]::new);
     }
 
-    @Mapping(expression = "java(dto.getDestinations().toArray(String[]::new))", target = "to")
+    @Mapping(expression = "java(dto.destinations().toArray(String[]::new))", target = "to")
     @Mapping(source = "sender", target = "from")
     @Mapping(source = "dto.subject", target = "subject")
     @Mapping(ignore = true, target = "fileTypeMap")

@@ -35,13 +35,7 @@ public class UserDocumentFactoryBot {
         }
 
         public UserDocument build(){
-            var userDocument = new UserDocument();
-            userDocument.setId(id);
-            userDocument.setName(name);
-            userDocument.setEmail(email);
-            userDocument.setCreatedAt(createdAt);
-            userDocument.setUpdatedAt(updatedAt);
-            return userDocument;
+            return new UserDocument(id, name, email, createdAt, updatedAt);
         }
 
     }

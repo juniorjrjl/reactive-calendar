@@ -22,11 +22,10 @@ public class UserService {
     }
 
     public Mono<UserDocument> update(final UserDocument document){
-        return userQueryService.findById(document.getId())
-                .map(deck -> {
-                    document.setCreatedAt(deck.getCreatedAt());
-                    return document;
-                })
+        return userQueryService.findById(document.id())
+                .map(deck -> document.toBuilder()
+                        .createdAt(deck.createdAt())
+                        .build())
                 .flatMap(userRepository::save)
                 .doFirst(() -> log.info("try to update a follow user {}", document));
     }

@@ -60,11 +60,11 @@ public class UserControllerDeleteTest {
 
     @Test
     void findByIdTest(){
-        requestBuilder.withUri(uriBuilder -> uriBuilder.pathSegment("{id}").build(userInserted.getId()))
+        requestBuilder.withUri(uriBuilder -> uriBuilder.pathSegment("{id}").build(userInserted.id()))
                 .generateRequestWithSimpleBody()
                 .doDelete()
                 .isHttpStatusIsNoContent();
-        assertThat(userRepository.findById(userInserted.getId()).blockOptional().isEmpty()).isTrue();
+        assertThat(userRepository.findById(userInserted.id()).blockOptional().isEmpty()).isTrue();
     }
 
     @Test
