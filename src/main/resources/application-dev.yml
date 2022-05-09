@@ -4,7 +4,23 @@ spring:
   data:
     mongodb:
       uri: mongodb://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}/${DB}?authSource=admin
+  mail:
+    host: ${MAIL_SMTP_HOST}
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          port: ${MAILSMTP_PORT}
 
 springdoc:
   swagger-ui:
     path: /api-doc.html
+
+retryable:
+  max-retries: 3
+  min-duration: 3
+
+reactive-calendar:
+  mail:
+    sender: Reactive Calendar <noreply@reactivecalendar.com>

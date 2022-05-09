@@ -14,7 +14,10 @@ public class BaseErrorMessage {
     public static final BaseErrorMessage GENERIC_EXCEPTION = new BaseErrorMessage("generic");
     public static final BaseErrorMessage GENERIC_NOT_FOUND_EXCEPTION = new BaseErrorMessage("generic.notFound");
     public static final BaseErrorMessage GENERIC_METHOD_NOT_ALLOWED_EXCEPTION = new BaseErrorMessage("generic.methodNotAllowed");
+    public static final BaseErrorMessage GENERIC_MAX_RETRIES = new BaseErrorMessage("generic.MaxRetries");
     public static final BaseErrorMessage USER_NOT_FOUND_EXCEPTION = new BaseErrorMessage("user.NotFound");
+    public static final BaseErrorMessage USER_NOT_FOUND_BY_EMAIL_EXCEPTION= new BaseErrorMessage("user.NotFoundByEmail");
+    public static final BaseErrorMessage USER_ALREADY_HAS_APPOINTMENT_IN_INTERVAL = new BaseErrorMessage("user.hasAppointment");
 
     private final String key;
     private String[] params;
@@ -33,7 +36,7 @@ public class BaseErrorMessage {
         return message;
     }
 
-    private String tryGetMessageFromBundle() {
+    protected String tryGetMessageFromBundle() {
         return getResource().getString(key);
     }
 

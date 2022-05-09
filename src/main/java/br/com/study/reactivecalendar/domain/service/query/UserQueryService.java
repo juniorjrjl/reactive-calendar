@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import static br.com.study.reactivecalendar.domain.exception.BaseErrorMessage.USER_NOT_FOUND_BY_EMAIL_EXCEPTION;
 import static br.com.study.reactivecalendar.domain.exception.BaseErrorMessage.USER_NOT_FOUND_EXCEPTION;
 
 @Service
@@ -21,6 +22,12 @@ public class UserQueryService {
         return userRepository.findById(id)
                 .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException(USER_NOT_FOUND_EXCEPTION.params(id).getMessage()))))
                 .doFirst(() -> log.info("Try to find user with id {}", id));
+    }
+
+    public Mono<UserDocument> findByEmail(final String email){
+        return userRepository.findFirstByEmail(email)
+                .switchIfEmpty(Mono.defer(() -> Mono.error(new NotFoundException(USER_NOT_FOUND_BY_EMAIL_EXCEPTION.params(email).getMessage()))))
+                .doFirst(() -> log.info("Try to find user with email {}", email));
     }
 
 }

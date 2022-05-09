@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+    <p th:text="${'Você recebeu um comvite de ' + owner + ' para um novo evento'}">Você recebeu um comvite de fulano@fulano.com para um novo evento</p>
+    <h1 th:text="${title}">
+        Reunião de alinhamento de metas do semestre
+    </h1>
+    <h2 th:text="${details}">
+        Reunião com os gerentes da empresa para definição de metas do semestre
+    </h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Inicio</th>
+                <th>Fim</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+            <td th:text="${#temporals.format(startIn, 'dd/MM/yyy - HH:mm:ss')}">
+                27/04/2022 - 13:00
+            </td>
+            <td th:text="${#temporals.format(endIn, 'dd/MM/yyy - HH:mm:ss')}">
+                27/04/2022 - 14:00
+            </td>
+            </tr>
+        </tbody>
+    </table>
+    <p>Por favor, responda se você estará presente ou não</p>
+</body>
+</html>
