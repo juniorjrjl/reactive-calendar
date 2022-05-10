@@ -1,5 +1,6 @@
 package br.com.study.reactivecalendar.domain.dto;
 
+import br.com.study.reactivecalendar.domain.dto.mailbuilder.CancelAppointmentBuilder;
 import br.com.study.reactivecalendar.domain.dto.mailbuilder.NewAppointmentBuilder;
 
 import java.util.List;
@@ -14,6 +15,14 @@ public record MailMessageDTO(List<String> destinations, String subject, Map<Stri
 
     public NewAppointmentBuilder toNewAppointmentBuilder() {
         return new NewAppointmentBuilder(destinations, subject, variables, template);
+    }
+
+    public static CancelAppointmentBuilder buildCancelAppointment(){
+        return new CancelAppointmentBuilder();
+    }
+
+    public CancelAppointmentBuilder toCancelAppointmentBuilder() {
+        return new CancelAppointmentBuilder(destinations, subject, variables, template);
     }
 
 }

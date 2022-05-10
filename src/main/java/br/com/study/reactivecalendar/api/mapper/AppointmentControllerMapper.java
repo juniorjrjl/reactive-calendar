@@ -2,6 +2,7 @@ package br.com.study.reactivecalendar.api.mapper;
 
 import br.com.study.reactivecalendar.api.controller.request.AppointmentRequest;
 import br.com.study.reactivecalendar.api.controller.request.GuestRequest;
+import br.com.study.reactivecalendar.api.controller.response.AppointmentFindResponse;
 import br.com.study.reactivecalendar.api.controller.response.AppointmentSingleResponse;
 import br.com.study.reactivecalendar.api.controller.response.GuestSingleResponse;
 import br.com.study.reactivecalendar.domain.document.AppointmentDocument;
@@ -42,5 +43,7 @@ public interface AppointmentControllerMapper {
 
     @Mapping(target = "email", source = "email")
     Set<GuestSingleResponse> toResponse(final Set<GuestDTO> document);
+
+    AppointmentFindResponse toResponse(final AppointmentDocument document);
 
 }

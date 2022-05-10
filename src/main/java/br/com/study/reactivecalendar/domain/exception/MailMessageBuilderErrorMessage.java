@@ -5,6 +5,8 @@ public class MailMessageBuilderErrorMessage extends BaseErrorMessage{
     public static final MailMessageBuilderErrorMessage ABSTRACT_MAIL_WITHOUT_REQUIRED_PROPERTY = new MailMessageBuilderErrorMessage("abstractMailMessageBuilder.requiredField");
     public static final MailMessageBuilderErrorMessage NEW_INVITE_WITHOUT_REQUIRED_PROPERTY = new MailMessageBuilderErrorMessage("newAppointmentBuilder.requiredField");
 
+    public static final MailMessageBuilderErrorMessage CANCEL_INVITE_WITHOUT_REQUIRED_PROPERTY = new MailMessageBuilderErrorMessage("cancelAppointmentBuilder.requiredField");
+
     public MailMessageBuilderErrorMessage(final String key) {
         super(key);
     }
@@ -25,27 +27,27 @@ public class MailMessageBuilderErrorMessage extends BaseErrorMessage{
     }
 
     public MailMessageBuilderErrorMessage title(){
-        this.params(getResource().getString("newAppointmentBuilder.title"));
+        this.params(getResource().getString("appointmentBuilder.title"));
         return this;
     }
 
     public MailMessageBuilderErrorMessage details(){
-        this.params(getResource().getString("newAppointmentBuilder.details"));
+        this.params(getResource().getString("appointmentBuilder.details"));
         return this;
     }
 
     public MailMessageBuilderErrorMessage startIn(){
-        this.params(getResource().getString("newAppointmentBuilder.startIn"));
+        this.params(getResource().getString("appointmentBuilder.startIn"));
         return this;
     }
 
     public MailMessageBuilderErrorMessage endIn(){
-        this.params(getResource().getString("newAppointmentBuilder.endIn"));
+        this.params(getResource().getString("appointmentBuilder.endIn"));
         return this;
     }
 
     public MailMessageBuilderErrorMessage owner(){
-        this.params(getResource().getString("newAppointmentBuilder.owner"));
+        this.params(getResource().getString("appointmentBuilder.owner"));
         return this;
     }
 

@@ -12,12 +12,6 @@ import static br.com.study.reactivecalendar.domain.exception.MailMessageBuilderE
 
 public class NewAppointmentBuilder extends AbstractMailMessageBuilder{
 
-    private static final String titleVariable = "title";
-    private static final String detailsVariable = "details";
-    private static final String startInVariable = "startIn";
-    private static final String endInVariable = "endIn";
-    private static final String ownerVariable = "owner";
-
     public NewAppointmentBuilder(final List<String> destinations, final String subject, final Map<String, Object> variables, final String template) {
         super(destinations, subject, variables, template);
     }

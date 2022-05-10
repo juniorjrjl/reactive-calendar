@@ -18,6 +18,12 @@ import static br.com.study.reactivecalendar.domain.exception.MailMessageBuilderE
 @AllArgsConstructor
 public abstract class AbstractMailMessageBuilder {
 
+    protected static final String titleVariable = "title";
+    protected static final String detailsVariable = "details";
+    protected static final String startInVariable = "startIn";
+    protected static final String endInVariable = "endIn";
+    protected static final String ownerVariable = "owner";
+
     protected List<String> destinations = new ArrayList<>();
     protected String subject;
     protected Map<String, Object> variables = new HashMap<>();

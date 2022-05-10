@@ -8,6 +8,7 @@ import br.com.study.reactivecalendar.domain.mapper.AppointmentMapper;
 import br.com.study.reactivecalendar.domain.mapper.GuestMapper;
 import br.com.study.reactivecalendar.domain.mapper.MailMapper;
 import br.com.study.reactivecalendar.domain.repository.AppointmentRepository;
+import br.com.study.reactivecalendar.domain.service.query.AppointmentQueryService;
 import br.com.study.reactivecalendar.domain.service.query.UserQueryService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ import static br.com.study.reactivecalendar.domain.exception.BaseErrorMessage.US
 public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
+    private final AppointmentQueryService appointmentQueryService;
     private final UserQueryService userQueryService;
     private final MailService mailService;
     private final GuestMapper guestMapper;
@@ -41,14 +43,13 @@ public class AppointmentService {
                 .map(u -> dto.toBuilder().guests(guestMapper.toDTOSet(u, dto.guests())).build())
                 .flatMap(appointmentDTO -> appointmentRepository.save(appointmentMapper.toDocument(appointmentDTO))
                         .map(document -> appointmentDTO.toBuilder().id(document.id()).build()))
-                .flatMap(this::notifyGuests);
+                .flatMap(this::notifyNewAppointment);
     }
 
     private Mono<UserDocument> userAlreadyHasAppointmentInInterval(final UserDocument user,
                                                                    final OffsetDateTime startIn,
                                                                    final OffsetDateTime endIn){
-        return appointmentRepository.findUserAppointmentsInInterval(user.id(), startIn, endIn)
-                .doFirst(() -> log.info("==== Checking if user with id {} has another appointment between {} and {}", user.id(), startIn, endIn))
+        return appointmentQueryService.findAppointmentsWithUserInInterval(user.id(), startIn, endIn)
                 .collectList()
                 .filter(CollectionUtils::isEmpty)
                 .switchIfEmpty(Mono.defer(() -> Mono.error(new ConflictException(USER_ALREADY_HAS_APPOINTMENT_IN_INTERVAL
@@ -57,12 +58,18 @@ public class AppointmentService {
                 .map(appointments -> user);
     }
 
-    private Mono<AppointmentDTO> notifyGuests(final AppointmentDTO dto){
+    private Mono<AppointmentDTO> notifyNewAppointment(final AppointmentDTO dto){
         return Mono.just(mailMapper.toNewAppointmentMailMessage(dto))
                 .onTerminateDetach()
                 .doOnSuccess(mailMessage -> mailService.send(mailMessage).subscribe())
                 .doFirst(() -> log.info("==== sending mail from owners {}", dto.guests().stream().map(GuestDTO::email).collect(Collectors.joining(","))))
                 .thenReturn(dto);
+    }
+
+    public Mono<Void> delete(final String id){
+        return appointmentQueryService.findById(id)
+                .flatMap(appointmentRepository::delete)
+                .doFirst(() -> log.info("try to delete appointment with id {}", id));
     }
 
 }

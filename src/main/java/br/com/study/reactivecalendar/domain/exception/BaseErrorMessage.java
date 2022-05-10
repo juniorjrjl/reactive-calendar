@@ -16,6 +16,7 @@ public class BaseErrorMessage {
     public static final BaseErrorMessage GENERIC_METHOD_NOT_ALLOWED_EXCEPTION = new BaseErrorMessage("generic.methodNotAllowed");
     public static final BaseErrorMessage GENERIC_MAX_RETRIES = new BaseErrorMessage("generic.MaxRetries");
     public static final BaseErrorMessage USER_NOT_FOUND_EXCEPTION = new BaseErrorMessage("user.NotFound");
+    public static final BaseErrorMessage APPOINTMENT_NOT_FOUND_EXCEPTION = new BaseErrorMessage("appointment.NotFound");
     public static final BaseErrorMessage USER_NOT_FOUND_BY_EMAIL_EXCEPTION= new BaseErrorMessage("user.NotFoundByEmail");
     public static final BaseErrorMessage USER_ALREADY_HAS_APPOINTMENT_IN_INTERVAL = new BaseErrorMessage("user.hasAppointment");
 
