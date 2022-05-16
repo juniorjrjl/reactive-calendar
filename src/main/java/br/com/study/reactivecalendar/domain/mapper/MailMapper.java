@@ -3,6 +3,7 @@ package br.com.study.reactivecalendar.domain.mapper;
 import br.com.study.reactivecalendar.domain.dto.AppointmentDTO;
 import br.com.study.reactivecalendar.domain.dto.GuestDTO;
 import br.com.study.reactivecalendar.domain.dto.MailMessageDTO;
+import br.com.study.reactivecalendar.domain.dto.mailbuilder.CancelAppointmentBuilder;
 import br.com.study.reactivecalendar.domain.dto.mailbuilder.NewAppointmentBuilder;
 import org.apache.commons.collections.CollectionUtils;
 import org.mapstruct.DecoratedWith;
@@ -20,6 +21,15 @@ import static org.mapstruct.InjectionStrategy.CONSTRUCTOR;
 @Mapper(componentModel = "spring", injectionStrategy = CONSTRUCTOR)
 @DecoratedWith(MailMapperDecorator.class)
 public interface MailMapper {
+
+    default MailMessageDTO toCancelAppointmentMainMessage(final AppointmentDTO dto){
+        return buildCancelAppointmentMailMessage(MailMessageDTO.buildCancelAppointment(), dto).build();
+    }
+
+    @Mapping(target = "subject", expression = "java(\"Você recebeu um convite para um evento\")")
+    @Mapping(target = "destinations", expression = "java(getGuestsEmails(dto.guests()))")
+    @Mapping(target = "owner", expression = "java(getAdminEmail(dto.guests()))")
+    CancelAppointmentBuilder buildCancelAppointmentMailMessage(final CancelAppointmentBuilder builder, final AppointmentDTO dto);
 
     default MailMessageDTO toNewAppointmentMailMessage(final AppointmentDTO dto){
         return buildNewAppointmentMailMessage(MailMessageDTO.buildNewAppointment(), dto).build();

@@ -18,6 +18,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.OffsetDateTime;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static br.com.study.reactivecalendar.domain.exception.BaseErrorMessage.USER_ALREADY_HAS_APPOINTMENT_IN_INTERVAL;
@@ -68,8 +69,28 @@ public class AppointmentService {
 
     public Mono<Void> delete(final String id){
         return appointmentQueryService.findById(id)
+                .map(appointmentMapper::toDTO)
+                .flatMap(dto -> setEmails(dto.guests())
+                        .collectList()
+                        .map(guests -> dto.toBuilder().guests(Set.copyOf(guests)).build()))
+                .flatMap(this::notifyCancelAppointment)
+                .map(appointmentMapper::toDocument)
                 .flatMap(appointmentRepository::delete)
                 .doFirst(() -> log.info("try to delete appointment with id {}", id));
+    }
+
+    private Mono<AppointmentDTO> notifyCancelAppointment(final AppointmentDTO dto){
+        return Mono.just(mailMapper.toCancelAppointmentMainMessage(dto))
+                .onTerminateDetach()
+                .doOnSuccess(mailMessage -> mailService.send(mailMessage).subscribe())
+                .doFirst(() -> log.info("==== sending mail from owners {}", dto.guests().stream().map(GuestDTO::email).collect(Collectors.joining(","))))
+                .thenReturn(dto);
+    }
+
+    public Flux<GuestDTO> setEmails(final Set<GuestDTO> dto){
+        return Flux.fromIterable(dto)
+                .flatMap(guest -> userQueryService.findById(guest.userId())
+                        .map(user -> appointmentMapper.setEmail(guest, user)));
     }
 
 }

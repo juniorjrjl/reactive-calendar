@@ -7,7 +7,7 @@ public record GuestDTO(String userId,
                        String email,
                        GuestType type) {
 
-    @Builder
+    @Builder(toBuilder = true)
     public GuestDTO {}
 
 }
