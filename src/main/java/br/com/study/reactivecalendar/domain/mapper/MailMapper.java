@@ -3,8 +3,7 @@ package br.com.study.reactivecalendar.domain.mapper;
 import br.com.study.reactivecalendar.domain.dto.AppointmentDTO;
 import br.com.study.reactivecalendar.domain.dto.GuestDTO;
 import br.com.study.reactivecalendar.domain.dto.MailMessageDTO;
-import br.com.study.reactivecalendar.domain.dto.mailbuilder.CancelAppointmentBuilder;
-import br.com.study.reactivecalendar.domain.dto.mailbuilder.NewAppointmentBuilder;
+import br.com.study.reactivecalendar.domain.dto.mailbuilder.MailMessageDTOBuilder;
 import org.apache.commons.collections.CollectionUtils;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
@@ -22,23 +21,14 @@ import static org.mapstruct.InjectionStrategy.CONSTRUCTOR;
 @DecoratedWith(MailMapperDecorator.class)
 public interface MailMapper {
 
-    default MailMessageDTO toCancelAppointmentMainMessage(final AppointmentDTO dto){
-        return buildCancelAppointmentMailMessage(MailMessageDTO.buildCancelAppointment(), dto).build();
+    default MailMessageDTO toMailMessageDTO(final MailMessageDTOBuilder builder, final AppointmentDTO dto,
+                                            final String ...destinations){
+        return buildMailMessageDTO(builder, dto, destinations).build();
     }
 
-    @Mapping(target = "subject", expression = "java(\"Você recebeu um convite para um evento\")")
-    @Mapping(target = "destinations", expression = "java(getGuestsEmails(dto.guests()))")
     @Mapping(target = "owner", expression = "java(getAdminEmail(dto.guests()))")
-    CancelAppointmentBuilder buildCancelAppointmentMailMessage(final CancelAppointmentBuilder builder, final AppointmentDTO dto);
-
-    default MailMessageDTO toNewAppointmentMailMessage(final AppointmentDTO dto){
-        return buildNewAppointmentMailMessage(MailMessageDTO.buildNewAppointment(), dto).build();
-    }
-
-    @Mapping(target = "subject", expression = "java(\"Você recebeu um convite para um evento\")")
-    @Mapping(target = "destinations", expression = "java(getGuestsEmails(dto.guests()))")
-    @Mapping(target = "owner", expression = "java(getAdminEmail(dto.guests()))")
-    NewAppointmentBuilder buildNewAppointmentMailMessage(@MappingTarget final NewAppointmentBuilder builder, final AppointmentDTO dto);
+    MailMessageDTOBuilder buildMailMessageDTO(@MappingTarget final MailMessageDTOBuilder builder, final AppointmentDTO dto,
+                                              final String ...destinations);
 
     default String getAdminEmail(final Set<GuestDTO> guests){
         return guests.stream().filter(guest -> guest.type().equals(ADMIN))

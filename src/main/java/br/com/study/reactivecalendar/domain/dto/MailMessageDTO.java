@@ -1,7 +1,6 @@
 package br.com.study.reactivecalendar.domain.dto;
 
-import br.com.study.reactivecalendar.domain.dto.mailbuilder.CancelAppointmentBuilder;
-import br.com.study.reactivecalendar.domain.dto.mailbuilder.NewAppointmentBuilder;
+import br.com.study.reactivecalendar.domain.dto.mailbuilder.MailMessageDTOBuilder;
 
 import java.util.List;
 import java.util.Map;
@@ -9,20 +8,20 @@ import java.util.Map;
 public record MailMessageDTO(List<String> destinations, String subject, Map<String, Object> variables,
                              String template) {
 
-    public static NewAppointmentBuilder buildNewAppointment() {
-        return new NewAppointmentBuilder();
+    public static MailMessageDTOBuilder buildNewAppointment() {
+        return new MailMessageDTOBuilder("Você recebeu um convite para um evento", "mail/newInvite");
     }
 
-    public NewAppointmentBuilder toNewAppointmentBuilder() {
-        return new NewAppointmentBuilder(destinations, subject, variables, template);
+    public static MailMessageDTOBuilder buildEditAppointment(){
+        return new MailMessageDTOBuilder("Um evento que você foi convidado foi alterado", "mail/editInvite");
     }
 
-    public static CancelAppointmentBuilder buildCancelAppointment(){
-        return new CancelAppointmentBuilder();
+    public static MailMessageDTOBuilder buildCancelAppointment(){
+        return new MailMessageDTOBuilder("Um evento foi cancelado", "mail/cancelInvite");
     }
 
-    public CancelAppointmentBuilder toCancelAppointmentBuilder() {
-        return new CancelAppointmentBuilder(destinations, subject, variables, template);
+    public static MailMessageDTOBuilder buildRemoveAppointment(){
+        return new MailMessageDTOBuilder("Você foi removido de um enveto", "mail/removeInvite");
     }
 
 }

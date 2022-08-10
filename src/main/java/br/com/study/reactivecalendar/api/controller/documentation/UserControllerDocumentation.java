@@ -5,6 +5,7 @@ import br.com.study.reactivecalendar.api.controller.response.UserSingleResponse;
 import br.com.study.reactivecalendar.api.exceptionhandler.ProblemResponse;
 import br.com.study.reactivecalendar.core.validation.MongoId;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -44,7 +45,8 @@ public interface UserControllerDocumentation {
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemResponse.class))})
     })
     @PutMapping(value = "/{id}", produces = APPLICATION_JSON_VALUE)
-    Mono<UserSingleResponse> update(@PathVariable @Valid @MongoId(message = "{userController.id}") final String id,
+    Mono<UserSingleResponse> update(@PathVariable @Valid @MongoId(message = "{userController.id}")
+                                    @Parameter(description = "Identificador do usuário", example = "610999d015f9b63acc77f317")final String id,
                                      @RequestBody @Valid final UserRequest request);
 
     @Operation(summary = "Endpoint para excluir um usuário")
@@ -55,7 +57,8 @@ public interface UserControllerDocumentation {
     })
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(NO_CONTENT)
-    Mono<Void> delete(@PathVariable @Valid @MongoId(message = "{userController.id}") String id);
+    Mono<Void> delete(@PathVariable @Valid @Parameter(description = "Identificador do usuário", example = "610999d015f9b63acc77f317")
+                      @MongoId(message = "{userController.id}") String id);
 
     @Operation(summary = "Endpoint para buscar um usuário pelo seu identificador")
     @ApiResponses({
@@ -65,6 +68,7 @@ public interface UserControllerDocumentation {
     })
     @GetMapping(value = "/{id}")
     @ResponseStatus(OK)
-    Mono<UserSingleResponse> findById(@PathVariable @Valid @MongoId(message = "{userController.id}") final String id);
+    Mono<UserSingleResponse> findById(@PathVariable @Valid @Parameter(description = "Identificador do usuário", example = "610999d015f9b63acc77f317")
+                                      @MongoId(message = "{userController.id}") final String id);
 
 }

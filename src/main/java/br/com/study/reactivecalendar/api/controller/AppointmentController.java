@@ -2,6 +2,7 @@ package br.com.study.reactivecalendar.api.controller;
 
 import br.com.study.reactivecalendar.api.controller.documentation.AppointmentControllerDocumentation;
 import br.com.study.reactivecalendar.api.controller.request.AppointmentRequest;
+import br.com.study.reactivecalendar.api.controller.request.AppointmentUpdateRequest;
 import br.com.study.reactivecalendar.api.controller.response.AppointmentFindResponse;
 import br.com.study.reactivecalendar.api.controller.response.AppointmentSingleResponse;
 import br.com.study.reactivecalendar.api.mapper.AppointmentControllerMapper;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,10 +41,20 @@ public class AppointmentController implements AppointmentControllerDocumentation
     private final AppointmentQueryService appointmentQueryService;
 
     @Override
-    @PostMapping(consumes = APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(CREATED)
     public Mono<AppointmentSingleResponse> save(final AppointmentRequest request) {
         return appointmentService.save(appointmentControllerMapper.toDTO(request))
+                .map(appointmentControllerMapper::toResponse);
+    }
+
+    @PutMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public Mono<AppointmentSingleResponse> update(@PathVariable @Valid
+                                                      @MongoId(message = "{appointmentController.id}")final String id,
+                                                  @RequestBody @Valid final AppointmentUpdateRequest request){
+        return appointmentService.update(appointmentControllerMapper.toDTO(request, id),
+                        appointmentControllerMapper.toGuestsDTO(request.newGuests()),
+                        request.guestsToRemove())
                 .map(appointmentControllerMapper::toResponse);
     }
 
@@ -54,7 +67,7 @@ public class AppointmentController implements AppointmentControllerDocumentation
     }
 
 
-    @DeleteMapping(value = "/{id}", produces = APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/{id}")
     @ResponseStatus(NO_CONTENT)
     public Mono<Void> delete(@PathVariable @Valid @MongoId(message = "{appointmentController.id}") final String id){
         return appointmentService.delete(id)

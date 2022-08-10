@@ -1,6 +1,7 @@
 package br.com.study.reactivecalendar.api.mapper;
 
 import br.com.study.reactivecalendar.api.controller.request.AppointmentRequest;
+import br.com.study.reactivecalendar.api.controller.request.AppointmentUpdateRequest;
 import br.com.study.reactivecalendar.api.controller.request.GuestRequest;
 import br.com.study.reactivecalendar.api.controller.response.AppointmentFindResponse;
 import br.com.study.reactivecalendar.api.controller.response.AppointmentSingleResponse;
@@ -29,6 +30,9 @@ public interface AppointmentControllerMapper {
     @Mapping(target = "updatedAt", ignore = true)
     AppointmentDTO toDTO(final AppointmentRequest request);
 
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    AppointmentDTO toDTO(final AppointmentUpdateRequest request, final String id);
 
     @IterableMapping(qualifiedByName = "toGuestsDTO")
     Set<GuestDTO> toGuestsDTO(final Set<GuestRequest> request);
