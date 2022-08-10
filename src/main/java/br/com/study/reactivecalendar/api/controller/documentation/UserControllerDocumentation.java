@@ -2,7 +2,7 @@ package br.com.study.reactivecalendar.api.controller.documentation;
 
 import br.com.study.reactivecalendar.api.controller.request.UserRequest;
 import br.com.study.reactivecalendar.api.controller.response.UserSingleResponse;
-import br.com.study.reactivecalendar.api.exceptionhandler.ProblemResponse;
+import br.com.study.reactivecalendar.api.controller.response.ProblemResponse;
 import br.com.study.reactivecalendar.core.validation.MongoId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

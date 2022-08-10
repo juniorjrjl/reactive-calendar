@@ -2,7 +2,7 @@ package br.com.study.reactivecalendar.api.controller.user;
 
 import br.com.study.reactivecalendar.ReactiveCalendarApplication;
 import br.com.study.reactivecalendar.api.controller.UserController;
-import br.com.study.reactivecalendar.api.exceptionhandler.ProblemResponse;
+import br.com.study.reactivecalendar.api.controller.response.ProblemResponse;
 import br.com.study.reactivecalendar.api.mapper.UserMapperImpl;
 import br.com.study.reactivecalendar.core.EmbeddedMongoDbConfig;
 import br.com.study.reactivecalendar.core.factoryBot.document.UserDocumentFactoryBot;

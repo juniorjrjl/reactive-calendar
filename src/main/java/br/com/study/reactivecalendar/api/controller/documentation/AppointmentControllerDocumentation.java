@@ -3,7 +3,7 @@ package br.com.study.reactivecalendar.api.controller.documentation;
 import br.com.study.reactivecalendar.api.controller.request.AppointmentRequest;
 import br.com.study.reactivecalendar.api.controller.response.AppointmentFindResponse;
 import br.com.study.reactivecalendar.api.controller.response.AppointmentSingleResponse;
-import br.com.study.reactivecalendar.api.exceptionhandler.ProblemResponse;
+import br.com.study.reactivecalendar.api.controller.response.ProblemResponse;
 import br.com.study.reactivecalendar.core.validation.MongoId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

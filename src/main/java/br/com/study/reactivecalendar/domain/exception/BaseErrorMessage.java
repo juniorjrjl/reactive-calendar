@@ -12,6 +12,7 @@ public class BaseErrorMessage {
     private static final String DEFAULT_RESOURCE = "messages";
 
     public static final BaseErrorMessage GENERIC_EXCEPTION = new BaseErrorMessage("generic");
+    public static final BaseErrorMessage GENERIC_BAD_REQUEST = new BaseErrorMessage("generic.badRequest");
     public static final BaseErrorMessage GENERIC_NOT_FOUND_EXCEPTION = new BaseErrorMessage("generic.notFound");
     public static final BaseErrorMessage GENERIC_METHOD_NOT_ALLOWED_EXCEPTION = new BaseErrorMessage("generic.methodNotAllowed");
     public static final BaseErrorMessage GENERIC_MAX_RETRIES = new BaseErrorMessage("generic.MaxRetries");

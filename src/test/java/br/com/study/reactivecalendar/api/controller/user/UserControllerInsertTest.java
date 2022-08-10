@@ -4,8 +4,8 @@ import br.com.study.reactivecalendar.ReactiveCalendarApplication;
 import br.com.study.reactivecalendar.api.controller.UserController;
 import br.com.study.reactivecalendar.api.controller.request.UserRequest;
 import br.com.study.reactivecalendar.api.controller.response.UserSingleResponse;
-import br.com.study.reactivecalendar.api.exceptionhandler.ErrorFieldResponse;
-import br.com.study.reactivecalendar.api.exceptionhandler.ProblemResponse;
+import br.com.study.reactivecalendar.api.controller.response.ErrorFieldResponse;
+import br.com.study.reactivecalendar.api.controller.response.ProblemResponse;
 import br.com.study.reactivecalendar.api.mapper.UserMapperImpl;
 import br.com.study.reactivecalendar.core.EmbeddedMongoDbConfig;
 import br.com.study.reactivecalendar.core.factoryBot.request.UserRequestFactoryBot;
@@ -100,8 +100,8 @@ public class UserControllerInsertTest {
                 .isHttpStatusIsBadRequest()
                 .assertBody(response ->{
                     assertThat(response).isNotNull();
-                    assertThat(response.getFields()).isNotNull();
-                    assertThat(response.getFields().stream().map(ErrorFieldResponse::getName).collect(Collectors.toList())).contains(fieldError);
+                    assertThat(response.fields()).isNotNull();
+                    assertThat(response.fields().stream().map(ErrorFieldResponse::name).collect(Collectors.toList())).contains(fieldError);
                 });
     }
 

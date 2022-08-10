@@ -1,7 +1,7 @@
 package br.com.study.reactivecalendar.utils.request;
 
 import br.com.study.reactivecalendar.api.controller.response.UserSingleResponse;
-import br.com.study.reactivecalendar.api.exceptionhandler.ProblemResponse;
+import br.com.study.reactivecalendar.api.controller.response.ProblemResponse;
 import org.springframework.context.ApplicationContext;
 
 public class RequestBuilderInstances {
