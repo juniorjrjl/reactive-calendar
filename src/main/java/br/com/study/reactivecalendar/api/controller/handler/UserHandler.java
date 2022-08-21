@@ -29,7 +29,6 @@ public class UserHandler {
     private final UserService userService;
     private final UserQueryService userQueryService;
     private final UserMapper userMapper;
-
     public Mono<ServerResponse> findById(final ServerRequest request){
         return getIdParam(request)
                 .flatMap(userQueryService::findById)

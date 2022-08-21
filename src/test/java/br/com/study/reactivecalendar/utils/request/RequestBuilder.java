@@ -1,7 +1,7 @@
 package br.com.study.reactivecalendar.utils.request;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.util.UriBuilder;
 
 import java.net.URI;
@@ -22,10 +22,10 @@ public class RequestBuilder<B> {
     private Object body;
     private final Class<B> responseClass;
 
-    public RequestBuilder(final ApplicationContext applicationContext, final String baseUri, final Class<B> responseClass){
+    public RequestBuilder(final RouterFunction<?> routerFunction, final String baseUri, final Class<B> responseClass){
         this.responseClass = responseClass;
         webTestClient = WebTestClient
-                .bindToApplicationContext(applicationContext)
+                .bindToRouterFunction(routerFunction)
                 .configureClient()
                 .baseUrl(baseUri)
                 .responseTimeout(Duration.ofDays(1))
