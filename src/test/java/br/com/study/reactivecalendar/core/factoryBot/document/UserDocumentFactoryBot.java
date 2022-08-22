@@ -34,6 +34,13 @@ public class UserDocumentFactoryBot {
             this.updatedAt = OffsetDateTime.now();
         }
 
+        public UserDocumentFactoryBotBuilder preInsert(){
+            this.id = null;
+            this.createdAt = null;
+            this.updatedAt = null;
+            return this;
+        }
+
         public UserDocument build(){
             return new UserDocument(id, name, email, createdAt, updatedAt);
         }

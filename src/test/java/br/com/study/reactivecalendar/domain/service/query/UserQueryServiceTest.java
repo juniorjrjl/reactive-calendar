@@ -1,4 +1,4 @@
-package br.com.study.reactivecalendar.domain.service;
+package br.com.study.reactivecalendar.domain.service.query;
 
 import br.com.study.reactivecalendar.core.factoryBot.document.UserDocumentFactoryBot;
 import br.com.study.reactivecalendar.domain.exception.NotFoundException;
