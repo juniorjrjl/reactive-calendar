@@ -27,8 +27,8 @@ public class AppointmentQueryService {
     }
 
     public Flux<AppointmentDocument> findAppointmentsWithUserInInterval(final String userId,
-                                                                         final OffsetDateTime startIn,
-                                                                         final OffsetDateTime endIn){
+                                                                        final OffsetDateTime startIn,
+                                                                        final OffsetDateTime endIn){
         return appointmentRepository.findUserAppointmentsInInterval(userId, startIn, endIn)
                 .doFirst(() -> log.info("==== Checking if user with id {} has another appointment between {} and {}", userId, startIn, endIn));
     }

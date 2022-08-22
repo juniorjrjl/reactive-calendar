@@ -1,5 +1,6 @@
 package br.com.study.reactivecalendar.domain.document;
 
+import lombok.Builder;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -22,5 +23,8 @@ public record AppointmentDocument(
     OffsetDateTime createdAt,
     @LastModifiedDate
     OffsetDateTime updatedAt){
+
+    @Builder(toBuilder = true)
+    public AppointmentDocument {}
 
 }

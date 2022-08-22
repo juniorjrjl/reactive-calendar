@@ -1,6 +1,5 @@
 package br.com.study.reactivecalendar.core.factoryBot.document;
 
-import br.com.study.reactivecalendar.core.RandomData;
 import br.com.study.reactivecalendar.domain.document.UserDocument;
 import com.github.javafaker.Faker;
 import lombok.NoArgsConstructor;
@@ -8,6 +7,7 @@ import org.bson.types.ObjectId;
 
 import java.time.OffsetDateTime;
 
+import static br.com.study.reactivecalendar.core.RandomData.getFaker;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
@@ -24,7 +24,7 @@ public class UserDocumentFactoryBot {
         private String email;
         private OffsetDateTime createdAt;
         private OffsetDateTime updatedAt;
-        private final Faker faker = RandomData.getFaker();
+        private final Faker faker = getFaker();
 
         public UserDocumentFactoryBotBuilder() {
             this.id = ObjectId.get().toString();
