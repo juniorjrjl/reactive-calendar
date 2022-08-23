@@ -11,9 +11,14 @@ import javax.validation.constraints.Size;
 public record UserRequest(
 
         @JsonProperty("name")
-        @Schema(description = "nome do usuário", example = "João") @NotBlank @Size(min = 1, max = 255) String name,
+        @Schema(description = "nome do usuário", example = "João")
+        @NotBlank
+        @Size(min = 1, max = 255) String name,
         @JsonProperty("email")
-        @Schema(description = "email do usuário", example = "joao@joao.com.br") @NotBlank @Email @Size(min = 1, max = 255) String email) {
+        @Schema(description = "email do usuário", example = "joao@joao.com.br")
+        @NotBlank
+        @Email
+        @Size(min = 1, max = 255) String email) {
 
     @Builder
     public UserRequest {}

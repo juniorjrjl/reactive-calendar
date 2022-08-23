@@ -40,7 +40,7 @@ public class UserHandler {
 
     public Mono<ServerResponse> save(final ServerRequest request){
         return request.bodyToMono(UserRequest.class)
-                .flatMap(user -> beanValidationService.verifyConstraints(user, "userRequest").thenReturn(user))
+                .flatMap(user -> beanValidationService.verifyConstraints(user, UserRequest.class.getSimpleName()).thenReturn(user))
                 .flatMap(user -> userService.save(userMapper.toDocument(user)))
                 .map(userMapper::toResponse)
                 .flatMap(response -> created(UriComponentsBuilder.fromPath("/users")
@@ -52,7 +52,7 @@ public class UserHandler {
 
     public Mono<ServerResponse> update(final ServerRequest request){
         return request.bodyToMono(UserRequest.class)
-                .flatMap(user -> beanValidationService.verifyConstraints(user, "userRequest").thenReturn(user))
+                .flatMap(user -> beanValidationService.verifyConstraints(user, UserRequest.class.getSimpleName()).thenReturn(user))
                 .zipWhen(user -> getIdParam(request))
                 .flatMap(tuple -> userService.update(userMapper.toDocument(tuple.getT2(), tuple.getT1())))
                 .map(userMapper::toResponse)
@@ -69,7 +69,7 @@ public class UserHandler {
 
     private Mono<String> getIdParam(final ServerRequest request){
         return Mono.just(new UserIdParam(request.pathVariable("id")))
-                .flatMap(param -> beanValidationService.verifyConstraints(param, "userIdParam"))
+                .flatMap(param -> beanValidationService.verifyConstraints(param, UserIdParam.class.getSimpleName()))
                 .thenReturn(request.pathVariable("id"));
     }
 

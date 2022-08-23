@@ -1,6 +1,6 @@
 package br.com.study.reactivecalendar.core.factoryBot.request;
 
-import br.com.study.reactivecalendar.api.controller.request.AppointmentRequest;
+import br.com.study.reactivecalendar.api.controller.request.AppointmentUpdateRequest;
 import br.com.study.reactivecalendar.api.controller.request.GuestRequest;
 import br.com.study.reactivecalendar.domain.document.GuestType;
 import com.github.javafaker.Faker;
@@ -18,62 +18,61 @@ import static br.com.study.reactivecalendar.core.RandomData.getFaker;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
-public class AppointmentRequestFactoryBot {
+public class AppointmentUpdateRequestFactoryBot {
 
-    public static AppointmentRequestFactoryBotBuilder builder(){
-        return new AppointmentRequestFactoryBotBuilder();
+    public static AppointmentUpdateRequestFactoryBotBuilder builder(){
+        return new AppointmentUpdateRequestFactoryBotBuilder();
     }
 
-    public static class AppointmentRequestFactoryBotBuilder{
+    public static class AppointmentUpdateRequestFactoryBotBuilder{
 
         private String title;
         private String details;
         private OffsetDateTime startIn;
         private OffsetDateTime endIn;
-        private Set<GuestRequest> guests;
+        private final Set<GuestRequest> newGuests;
+        private final Set<String> guestsToRemove = new HashSet<>();
         private final Faker faker = getFaker();
 
-        public AppointmentRequestFactoryBotBuilder() {
+        public AppointmentUpdateRequestFactoryBotBuilder() {
             this.title = faker.lorem().characters(100);
             this.details = faker.lorem().characters(255);
             this.startIn = birthday();
             this.endIn = between(startIn, OffsetDateTime.now().plusYears(80L));
-            this.guests = generateGuests(faker.number().randomDigitNotZero(), 1);
+            this.newGuests = generateGuests(faker.number().randomDigitNotZero(), faker.number().randomDigitNotZero());
+            this.guestsToRemove.addAll(Stream.generate(() -> faker.internet().emailAddress())
+                    .limit(faker.number().randomDigitNotZero())
+                    .collect(Collectors.toSet()));
         }
 
-        public AppointmentRequestFactoryBotBuilder blankTitle(){
+        public AppointmentUpdateRequestFactoryBotBuilder blankTitle(){
             this.title = faker.bool().bool() ? null : "   ";
             return this;
         }
 
-        public AppointmentRequestFactoryBotBuilder blankDetails(){
+        public AppointmentUpdateRequestFactoryBotBuilder blankDetails(){
             this.details = faker.bool().bool() ? null : "   ";
             return this;
         }
 
-        public AppointmentRequestFactoryBotBuilder withoutGuests(){
-            this.guests = faker.bool().bool() ? null : new HashSet<>();
-            return this;
-        }
-
-        public AppointmentRequestFactoryBotBuilder withoutStartIn(){
+        public AppointmentUpdateRequestFactoryBotBuilder withoutStartIn(){
             this.startIn = null;
             return this;
         }
 
-        public AppointmentRequestFactoryBotBuilder withoutEndIn(){
+        public AppointmentUpdateRequestFactoryBotBuilder withoutEndIn(){
             this.endIn = null;
             return this;
         }
 
-        public AppointmentRequestFactoryBotBuilder invalidPeriod(){
+        public AppointmentUpdateRequestFactoryBotBuilder invalidPeriod(){
             this.endIn = birthday();
             this.startIn = between(endIn, OffsetDateTime.now().plusYears(80L));
             return this;
         }
 
-        public AppointmentRequestFactoryBotBuilder withoutGuestAdmin(){
-            this.guests = generateGuests(faker.number().randomDigitNotZero(), 0);
+        public AppointmentUpdateRequestFactoryBotBuilder invalidEmailInGuestToRemove(){
+            this.guestsToRemove.add(faker.lorem().word());
             return this;
         }
 
@@ -91,13 +90,14 @@ public class AppointmentRequestFactoryBot {
             return guests;
         }
 
-        public AppointmentRequest build(){
-            return AppointmentRequest.builder()
+        public AppointmentUpdateRequest build(){
+            return AppointmentUpdateRequest.builder()
                     .title(title)
                     .details(details)
                     .startIn(startIn)
                     .endIn(endIn)
-                    .guests(guests)
+                    .newGuests(newGuests)
+                    .guestsToRemove(guestsToRemove)
                     .build();
         }
 

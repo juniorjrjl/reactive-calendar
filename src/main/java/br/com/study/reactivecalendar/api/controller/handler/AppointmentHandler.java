@@ -43,7 +43,7 @@ public class AppointmentHandler {
 
     public Mono<ServerResponse> save(final ServerRequest request){
         return request.bodyToMono(AppointmentRequest.class)
-                .flatMap(appointment -> beanValidationService.verifyConstraints(appointment, "appointmentRequest")
+                .flatMap(appointment -> beanValidationService.verifyConstraints(appointment, AppointmentRequest.class.getSimpleName())
                         .thenReturn(appointment))
                 .flatMap(appointment -> appointmentService.save(appointmentControllerMapper.toDTO(appointment)))
                 .map(appointmentControllerMapper::toResponse)
@@ -56,7 +56,7 @@ public class AppointmentHandler {
 
     public Mono<ServerResponse> update(final ServerRequest request){
         return request.bodyToMono(AppointmentUpdateRequest.class)
-                .flatMap(appointment -> beanValidationService.verifyConstraints(appointment, "appointmentRequest")
+                .flatMap(appointment -> beanValidationService.verifyConstraints(appointment, AppointmentUpdateRequest.class.getSimpleName())
                         .thenReturn(appointment))
                 .zipWhen(appointment -> getIdParam(request))
                 .flatMap(tuple -> appointmentService.update(appointmentControllerMapper.toDTO(tuple.getT1(), tuple.getT2()),
@@ -75,7 +75,7 @@ public class AppointmentHandler {
 
     private Mono<String> getIdParam(final ServerRequest request){
         return Mono.just(new AppointmentIdParam(request.pathVariable("id")))
-                .flatMap(param -> beanValidationService.verifyConstraints(param, "appointmentIdParam"))
+                .flatMap(param -> beanValidationService.verifyConstraints(param, AppointmentIdParam.class.getSimpleName()))
                 .thenReturn(request.pathVariable("id"));
     }
 
