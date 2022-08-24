@@ -10,7 +10,7 @@ group = 'br.com.study'
 version = '1.0.0'
 
 ext {
-	mapstructVersion = '1.4.2.Final'
+	mapstructVersion = '1.5.2.Final'
 }
 
 java {
@@ -39,7 +39,7 @@ dependencies {
 	implementation "org.mapstruct:mapstruct:$mapstructVersion"
 	implementation 'org.apache.commons:commons-lang3:3.12.0'
 	implementation 'commons-collections:commons-collections:3.2.2'
-    implementation 'org.jetbrains:annotations:20.1.0'
+    implementation 'org.jetbrains:annotations:23.0.0'
     annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
 
 
@@ -52,8 +52,9 @@ dependencies {
 	testImplementation 'io.projectreactor:reactor-test'
 	testImplementation 'org.projectlombok:lombok'
 	testImplementation 'com.github.javafaker:javafaker:1.0.2'
+	testImplementation 'com.icegreen:greenmail:1.6.9'
 	testRuntimeOnly 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
-	implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.6'
+	implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.10'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
