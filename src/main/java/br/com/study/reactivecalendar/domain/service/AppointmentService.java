@@ -113,12 +113,6 @@ public class AppointmentService {
 
     }
 
-    private Mono<Void> verifyNewGuests(final List<String> emails){
-        return Flux.fromIterable(emails)
-                .flatMap(userQueryService::findByEmail)
-                .then();
-    }
-
     private Mono<AppointmentPreUpdate> buildPreUpdateDTO(final AppointmentDTO dto, Set<GuestDTO> newGuests, final Set<String> guestsToRemove){
         return Mono.just(AppointmentPreUpdate.builder().appointmentDTO(dto).newGuest(newGuests))
                 .flatMap(builder -> getGuestToRemove(guestsToRemove)
