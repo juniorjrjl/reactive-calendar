@@ -40,7 +40,7 @@ public class UserHandler {
 
     public Mono<ServerResponse> save(final ServerRequest request){
         return request.bodyToMono(UserRequest.class)
-                .flatMap(user -> beanValidationService.verifyConstraints(user, UserRequest.class.getSimpleName()).thenReturn(user))
+                .flatMap(user -> beanValidationService.verifyConstraints(user, UserRequest.class.getSimpleName()).then(Mono.just(user)))
                 .flatMap(user -> userService.save(userMapper.toDocument(user)))
                 .map(userMapper::toResponse)
                 .flatMap(response -> created(UriComponentsBuilder.fromPath("/users")
