@@ -3,7 +3,7 @@ package br.com.study.reactivecalendar.domain.dto.mailbuilder;
 import br.com.study.reactivecalendar.domain.dto.MailMessageDTO;
 import br.com.study.reactivecalendar.domain.exception.MailBuilderException;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.OffsetDateTime;

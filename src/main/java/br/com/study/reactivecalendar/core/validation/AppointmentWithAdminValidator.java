@@ -1,7 +1,7 @@
 package br.com.study.reactivecalendar.core.validation;
 
 import br.com.study.reactivecalendar.api.controller.request.GuestRequest;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

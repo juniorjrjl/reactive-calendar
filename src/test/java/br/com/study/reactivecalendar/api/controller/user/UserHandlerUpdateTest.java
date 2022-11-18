@@ -18,6 +18,7 @@ import br.com.study.reactivecalendar.api.mapper.UserMapper;
 import br.com.study.reactivecalendar.api.mapper.UserMapperImpl;
 import br.com.study.reactivecalendar.core.factoryBot.request.UserRequestFactoryBot;
 import br.com.study.reactivecalendar.domain.document.UserDocument;
+import br.com.study.reactivecalendar.domain.exception.NotFoundException;
 import br.com.study.reactivecalendar.domain.service.BeanValidationService;
 import br.com.study.reactivecalendar.domain.service.UserService;
 import br.com.study.reactivecalendar.domain.service.query.UserQueryService;
@@ -34,7 +35,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
 import java.time.OffsetDateTime;
@@ -54,7 +54,7 @@ import static org.mockito.Mockito.when;
         BeanValidationHandler.class, ResponseStatusHandler.class, ReactiveCalenderHandler.class, GenericHandler.class,
         JsonProcessingHandler.class, UserHandler.class, UserRouter.class, BeanValidationService.class})
 @WebFluxTest
-public class UserHandlerSaveTest {
+public class UserHandlerUpdateTest {
 
     @MockBean
     private UserService userService;
@@ -75,35 +75,50 @@ public class UserHandlerSaveTest {
     }
 
     @Test
-    void saveTest(){
+    void updateTest(){
         var request = UserRequestFactoryBot.builder().build();
-        when(userService.save(any(UserDocument.class))).thenAnswer(invocation -> {
+        var id = ObjectId.get().toString();
+        when(userService.update(any(UserDocument.class))).thenAnswer(invocation -> {
             var document = invocation.getArgument(0, UserDocument.class);
             document = document.toBuilder()
-                    .id(ObjectId.get().toString())
                     .createdAt(OffsetDateTime.now())
                     .updatedAt(OffsetDateTime.now())
                     .build();
             return Mono.just(document);
         });
-        userResponseRequestBuilder.withUri(UriBuilder::build)
+        userResponseRequestBuilder.withUri(uriBuilder -> uriBuilder.pathSegment("{id}").build(id))
                 .withBody(request)
                 .generateRequestWithSimpleBody()
-                .doPost()
-                .isHttpStatusIsCreated()
-                .assertBody(response -> assertThat(response).usingRecursiveComparison()
+                .doPut()
+                .isHttpStatusIsOk()
+                .assertBody(response -> {
+                    assertThat(response).usingRecursiveComparison()
                             .ignoringFields("id", "createdAt", "updatedAt")
-                            .isEqualTo(request));
-        verify(userService).save(any(UserDocument.class));
+                            .isEqualTo(request);
+                    assertThat(response.id()).isEqualTo(id);
+                });
+    }
+
+    @Test
+    void whenTryToUpdateNonStoredUserThenReturnBadRequest(){
+        var request = UserRequestFactoryBot.builder().build();
+        var id = ObjectId.get().toString();
+        when(userService.update(any(UserDocument.class))).thenReturn(Mono.error(new NotFoundException("")));
+        problemResponseRequestBuilder.withUri(uriBuilder -> uriBuilder.pathSegment("{id}").build(id))
+                .withBody(request)
+                .generateRequestWithSimpleBody()
+                .doPut()
+                .isHttpStatusIsNotFound();
     }
 
     @Test
     void whenRequestHasInvalidDataThenThrowError(){
         var request = UserRequestFactoryBot.builder().withLargeEmail().build();
-        problemResponseRequestBuilder.withUri(UriBuilder::build)
+        var id = ObjectId.get().toString();
+        problemResponseRequestBuilder.withUri(uriBuilder -> uriBuilder.pathSegment("{id}").build(id))
                 .withBody(request)
                 .generateRequestWithSimpleBody()
-                .doPost()
+                .doPut()
                 .isHttpStatusIsBadRequest();
         verify(userService, times(0)).save(any(UserDocument.class));
     }

@@ -3,8 +3,11 @@ package br.com.study.reactivecalendar.domain.service;
 import br.com.study.reactivecalendar.core.factoryBot.document.AppointmentDocumentFactoryBot;
 import br.com.study.reactivecalendar.core.factoryBot.document.UserDocumentFactoryBot;
 import br.com.study.reactivecalendar.core.factoryBot.dto.AppointmentDTOFactoryBot;
+import br.com.study.reactivecalendar.core.factoryBot.dto.GuestDTOFactoryBot;
 import br.com.study.reactivecalendar.domain.document.AppointmentDocument;
 import br.com.study.reactivecalendar.domain.document.UserDocument;
+import br.com.study.reactivecalendar.domain.dto.AppointmentDTO;
+import br.com.study.reactivecalendar.domain.dto.GuestDTO;
 import br.com.study.reactivecalendar.domain.dto.MailMessageDTO;
 import br.com.study.reactivecalendar.domain.exception.ConflictException;
 import br.com.study.reactivecalendar.domain.exception.NotFoundException;
@@ -19,10 +22,14 @@ import br.com.study.reactivecalendar.domain.repository.AppointmentRepository;
 import br.com.study.reactivecalendar.domain.service.query.AppointmentQueryService;
 import br.com.study.reactivecalendar.domain.service.query.UserQueryService;
 import com.github.javafaker.Faker;
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -37,9 +44,13 @@ import reactor.test.StepVerifier;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static br.com.study.reactivecalendar.core.RandomData.getFaker;
@@ -74,7 +85,7 @@ public class AppointmentServiceTest {
 
     private AppointmentService appointmentService;
 
-    private final Faker faker = getFaker();
+    private final static Faker faker = getFaker();
 
     @BeforeEach
     void setup(){
@@ -180,6 +191,102 @@ public class AppointmentServiceTest {
         verify(appointmentQueryService).findById(anyString());
         verify(userQueryService, times(0)).findById(anyString());
         verify(mailService, times(0)).send(any(MailMessageDTO.class));
+    }
+
+    @Test
+    void whenTryToUpdateNonStoredAppointmentThenThrowError(){
+        when(appointmentQueryService.findById(anyString())).thenReturn(Mono.error(new NotFoundException("")));
+        var newGuests = Stream.generate(() -> GuestDTOFactoryBot.builder().build())
+                .limit(faker.number().randomDigitNotZero())
+                .collect(Collectors.toSet());
+        var guestToRemove = Stream.generate(() -> faker.internet().emailAddress())
+                .limit(faker.number().randomDigitNotZero())
+                .collect(Collectors.toSet());
+        StepVerifier.create(appointmentService.update(AppointmentDTOFactoryBot.builder().build(), newGuests, guestToRemove))
+                .verifyError(NotFoundException.class);
+        verify(userQueryService, times(0)).findById(anyString());
+        verify(userQueryService, times(0)).findByEmail(anyString());
+        verify(appointmentRepository, times(0)).save(any());
+        verify(mailService, times(0)).send(any());
+    }
+
+    @Test
+    void whenTryPassInvalidUserInAttachedThenThrowError(){
+        when(appointmentQueryService.findById(anyString())).thenReturn(Mono.just(AppointmentDocumentFactoryBot.builder().build()));
+        when(userQueryService.findById(anyString())).thenReturn(Mono.error(new NotFoundException("")));
+        var newGuests = Stream.generate(() -> GuestDTOFactoryBot.builder().build())
+                .limit(faker.number().randomDigitNotZero())
+                .collect(Collectors.toSet());
+        var guestToRemove = Stream.generate(() -> faker.internet().emailAddress())
+                .limit(faker.number().randomDigitNotZero())
+                .collect(Collectors.toSet());
+        StepVerifier.create(appointmentService.update(AppointmentDTOFactoryBot.builder().build(), newGuests, guestToRemove))
+                .verifyError(NotFoundException.class);
+        verify(userQueryService, times(0)).findByEmail(anyString());
+        verify(appointmentRepository, times(0)).save(any());
+        verify(mailService, times(0)).send(any());
+    }
+
+    @Test
+    void whenTryAttachNonStoredUserThenThrowError(){
+        when(appointmentQueryService.findById(anyString())).thenReturn(Mono.just(AppointmentDocumentFactoryBot.builder().build()));
+        when(userQueryService.findById(anyString())).thenReturn(Mono.just(UserDocumentFactoryBot.builder().build()));
+        when(userQueryService.findByEmail(anyString())).thenReturn(Mono.error(new NotFoundException("")));
+        var newGuests = Stream.generate(() -> GuestDTOFactoryBot.builder().build())
+                .limit(faker.number().randomDigitNotZero())
+                .collect(Collectors.toSet());
+        var guestToRemove = Stream.generate(() -> faker.internet().emailAddress())
+                .limit(faker.number().randomDigitNotZero())
+                .collect(Collectors.toSet());
+        StepVerifier.create(appointmentService.update(AppointmentDTOFactoryBot.builder().build(), newGuests, guestToRemove))
+                .verifyError(NotFoundException.class);
+        verify(appointmentRepository, times(0)).save(any());
+        verify(mailService, times(0)).send(any());
+    }
+
+    private static Stream<Arguments> updateTest(){
+        var newGuests = Stream.generate(() -> GuestDTOFactoryBot.builder().build())
+                .limit(faker.number().randomDigitNotZero())
+                .collect(Collectors.toSet());
+        var guestsToRemove = Stream.generate(() -> faker.internet().emailAddress())
+                .limit(faker.number().randomDigitNotZero())
+                .collect(Collectors.toSet());
+        var appointment = AppointmentDTOFactoryBot.builder().build();
+        Consumer<List<MailMessageDTO>> newGuestsVerifier = mails ->{
+            assertThat(mails.stream().filter(m -> m.template().equals("mail/editInvite")).count()).isOne();
+            assertThat(mails.stream().filter(m -> m.template().equals("mail/newInvite")).count()).isOne();
+            assertThat(mails.size()).isEqualTo(2);
+        };
+        Consumer<List<MailMessageDTO>> guestsUpdatedVerifier = mails -> assertThat(mails.size()).isOne();
+        Consumer<List<MailMessageDTO>> guestsRemovedVerifier = mails ->{
+            assertThat(mails.stream().filter(m -> m.template().equals("mail/removeInvite")).count()).isOne();
+            assertThat(mails.stream().filter(m -> m.template().equals("mail/editInvite")).count()).isOne();
+            assertThat(mails.size()).isEqualTo(2);
+        };
+        return Stream.of(
+                Arguments.of(appointment, new HashSet<>(), new HashSet<>(), guestsUpdatedVerifier),
+                Arguments.of(appointment, newGuests, new HashSet<>(), newGuestsVerifier),
+                Arguments.of(appointment, new HashSet<>(), guestsToRemove, guestsRemovedVerifier)
+        );
+    }
+
+    @MethodSource
+    @ParameterizedTest
+    void updateTest(final AppointmentDTO dto, final Set<GuestDTO> newGuests, final Set<String> guestsToRemove,
+                    final Consumer<List<MailMessageDTO>> mailVerifiers) throws InterruptedException {
+        when(appointmentQueryService.findById(anyString())).thenReturn(Mono.just(AppointmentDocumentFactoryBot.builder().build()));
+        when(userQueryService.findById(anyString())).thenReturn(Mono.just(UserDocumentFactoryBot.builder().build()));
+        if (CollectionUtils.isNotEmpty(newGuests) || CollectionUtils.isNotEmpty(guestsToRemove)) {
+            when(userQueryService.findByEmail(anyString())).thenReturn(Mono.just(UserDocumentFactoryBot.builder().build()));
+        }
+        when(appointmentRepository.save(any())).thenAnswer(invocation -> Mono.just(invocation.getArgument(0, AppointmentDocument.class)));
+        when(mailService.send(mailMessageCaptor.capture())).thenReturn(Mono.empty());
+        StepVerifier.create(appointmentService.update(dto, newGuests, guestsToRemove))
+                .assertNext(actual -> assertThat(actual).isNotNull())
+                .verifyComplete();
+        TimeUnit.SECONDS.sleep(2L);
+        var mailMessages = mailMessageCaptor.getAllValues();
+        mailVerifiers.accept(mailMessages);
     }
 
 }

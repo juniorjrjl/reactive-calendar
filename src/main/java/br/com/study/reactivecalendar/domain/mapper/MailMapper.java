@@ -4,7 +4,7 @@ import br.com.study.reactivecalendar.domain.dto.AppointmentDTO;
 import br.com.study.reactivecalendar.domain.dto.GuestDTO;
 import br.com.study.reactivecalendar.domain.dto.MailMessageDTO;
 import br.com.study.reactivecalendar.domain.dto.mailbuilder.MailMessageDTOBuilder;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

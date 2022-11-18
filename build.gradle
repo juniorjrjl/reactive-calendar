@@ -1,6 +1,6 @@
 plugins {
-	id 'org.springframework.boot' version '2.7.3'
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'org.springframework.boot' version '2.7.5'
+	id 'io.spring.dependency-management' version '1.1.0'
 	id 'java'
 	id 'jacoco'
 	id 'com.adarshr.test-logger' version '3.2.0'
@@ -10,7 +10,7 @@ group = 'br.com.study'
 version = '1.0.0'
 
 ext {
-	mapstructVersion = '1.5.2.Final'
+	mapstructVersion = '1.5.3.Final'
 }
 
 java {
@@ -38,9 +38,9 @@ dependencies {
 	implementation 'org.projectlombok:lombok'
 	implementation "org.mapstruct:mapstruct:$mapstructVersion"
 	implementation 'org.apache.commons:commons-lang3:3.12.0'
-	implementation 'commons-collections:commons-collections:3.2.2'
+	implementation 'org.apache.commons:commons-collections4:4.4'
     implementation 'org.jetbrains:annotations:23.0.0'
-	implementation 'org.yaml:snakeyaml:1.29'
+	implementation 'org.yaml:snakeyaml:1.33'
     annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
 
 
@@ -53,13 +53,14 @@ dependencies {
 	testImplementation 'io.projectreactor:reactor-test'
 	testImplementation 'org.projectlombok:lombok'
 	testImplementation 'com.github.javafaker:javafaker:1.0.2'
-	testImplementation 'com.icegreen:greenmail:1.6.9'
+	testImplementation 'com.icegreen:greenmail:1.6.11'
 	testRuntimeOnly 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
-	implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.10'
+	implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.12'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 test {
+	jvmArgs '-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=*:5005'
 	useJUnitPlatform()
 	testlogger{
 		theme 'mocha-parallel'
@@ -79,4 +80,8 @@ test {
 
 jar {
 	enabled = false
+}
+
+bootRun{
+	jvmArgs '-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=*:5005'
 }
