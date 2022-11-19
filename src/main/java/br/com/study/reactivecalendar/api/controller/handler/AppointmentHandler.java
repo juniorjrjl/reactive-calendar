@@ -51,7 +51,7 @@ public class AppointmentHandler {
                         .pathSegment("{id}")
                         .build(response.id()))
                         .contentType(APPLICATION_JSON)
-                        .body(response, UserSingleResponse.class));
+                        .body(Mono.just(response), AppointmentSingleResponse.class));
     }
 
     public Mono<ServerResponse> update(final ServerRequest request){
