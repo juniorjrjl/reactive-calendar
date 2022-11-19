@@ -1,5 +1,6 @@
 package br.com.study.reactivecalendar.utils.request;
 
+import br.com.study.reactivecalendar.api.controller.response.AppointmentSingleResponse;
 import br.com.study.reactivecalendar.api.controller.response.ProblemResponse;
 import br.com.study.reactivecalendar.api.controller.response.UserSingleResponse;
 import org.springframework.context.ApplicationContext;
@@ -8,6 +9,10 @@ public class RequestBuilderInstances {
 
     public static RequestBuilder<UserSingleResponse> userResponseRequestBuilder(final ApplicationContext applicationContext, final String baseUri){
         return new RequestBuilder<>(applicationContext, baseUri, UserSingleResponse.class);
+    }
+
+    public static RequestBuilder<AppointmentSingleResponse> appointmentResponseRequestBuilder(final ApplicationContext applicationContext, final String baseUri){
+        return new RequestBuilder<>(applicationContext, baseUri, AppointmentSingleResponse.class);
     }
 
     public static RequestBuilder<ProblemResponse> problemResponseRequestBuilder(final ApplicationContext applicationContext, final String baseUri){

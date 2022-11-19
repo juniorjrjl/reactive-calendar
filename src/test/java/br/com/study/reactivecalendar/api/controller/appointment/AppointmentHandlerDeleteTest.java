@@ -1,9 +1,9 @@
-package br.com.study.reactivecalendar.api.controller.user;
+package br.com.study.reactivecalendar.api.controller.appointment;
 
-import br.com.study.reactivecalendar.api.controller.handler.UserHandler;
+import br.com.study.reactivecalendar.api.controller.handler.AppointmentHandler;
 import br.com.study.reactivecalendar.api.controller.response.ErrorFieldResponse;
 import br.com.study.reactivecalendar.api.controller.response.ProblemResponse;
-import br.com.study.reactivecalendar.api.controller.router.UserRouter;
+import br.com.study.reactivecalendar.api.controller.router.AppointmentRouter;
 import br.com.study.reactivecalendar.api.exceptionprocessor.ApiExceptionHandlerProcessor;
 import br.com.study.reactivecalendar.api.exceptionprocessor.handler.BeanValidationHandler;
 import br.com.study.reactivecalendar.api.exceptionprocessor.handler.ConflictHandler;
@@ -14,13 +14,13 @@ import br.com.study.reactivecalendar.api.exceptionprocessor.handler.MethodNotAll
 import br.com.study.reactivecalendar.api.exceptionprocessor.handler.NotFoundHandler;
 import br.com.study.reactivecalendar.api.exceptionprocessor.handler.ReactiveCalenderHandler;
 import br.com.study.reactivecalendar.api.exceptionprocessor.handler.ResponseStatusHandler;
-import br.com.study.reactivecalendar.api.mapper.UserMapper;
-import br.com.study.reactivecalendar.api.mapper.UserMapperImpl;
-import br.com.study.reactivecalendar.core.factoryBot.document.UserDocumentFactoryBot;
+import br.com.study.reactivecalendar.api.mapper.AppointmentControllerMapper;
+import br.com.study.reactivecalendar.api.mapper.AppointmentControllerMapperImpl;
+import br.com.study.reactivecalendar.core.factoryBot.document.AppointmentDocumentFactoryBot;
 import br.com.study.reactivecalendar.domain.exception.NotFoundException;
+import br.com.study.reactivecalendar.domain.service.AppointmentService;
 import br.com.study.reactivecalendar.domain.service.BeanValidationService;
-import br.com.study.reactivecalendar.domain.service.UserService;
-import br.com.study.reactivecalendar.domain.service.query.UserQueryService;
+import br.com.study.reactivecalendar.domain.service.query.AppointmentQueryService;
 import br.com.study.reactivecalendar.utils.request.RequestBuilder;
 import com.github.javafaker.Faker;
 import org.bson.types.ObjectId;
@@ -46,19 +46,19 @@ import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
 @ExtendWith({SpringExtension.class, MockitoExtension.class})
-@ContextConfiguration(classes = {UserMapperImpl.class, ApiExceptionHandlerProcessor.class,
+@ContextConfiguration(classes = {AppointmentControllerMapperImpl.class, ApiExceptionHandlerProcessor.class,
         ConflictHandler.class, MethodNotAllowHandler.class, NotFoundHandler.class, ConstraintViolationHandler.class,
         BeanValidationHandler.class, ResponseStatusHandler.class, ReactiveCalenderHandler.class, GenericHandler.class,
-        JsonProcessingHandler.class, UserHandler.class, UserRouter.class, BeanValidationService.class})
+        JsonProcessingHandler.class, AppointmentHandler.class, AppointmentRouter.class, BeanValidationService.class})
 @WebFluxTest
-public class UserHandlerDeleteTest {
+public class AppointmentHandlerDeleteTest {
 
     @MockBean
-    private UserService userService;
+    private AppointmentService appointmentService;
     @MockBean
-    private UserQueryService userQueryService;
+    private AppointmentQueryService appointmentQueryService;
     @Autowired
-    private UserMapper userMapper;
+    private AppointmentControllerMapper appointmentControllerMapper;;
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -69,14 +69,14 @@ public class UserHandlerDeleteTest {
 
     @BeforeEach
     void setup(){
-        emptyBodyResponseRequestBuilder = noBodyResponseRequestBuilder(applicationContext, "/users/");
-        problemResponseRequestBuilder = problemResponseRequestBuilder(applicationContext, "/users/");
+        emptyBodyResponseRequestBuilder = noBodyResponseRequestBuilder(applicationContext, "/appointments/");
+        problemResponseRequestBuilder = problemResponseRequestBuilder(applicationContext, "/appointments/");
     }
 
     @Test
     void deleteTest(){
-        var document = UserDocumentFactoryBot.builder().build();
-        when(userService.delete(anyString())).thenReturn(Mono.empty());
+        var document = AppointmentDocumentFactoryBot.builder().build();
+        when(appointmentService.delete(anyString())).thenReturn(Mono.empty());
         emptyBodyResponseRequestBuilder.withUri(uriBuilder -> uriBuilder.pathSegment("{id}").build(ObjectId.get().toString()))
                 .generateRequestWithoutBody()
                 .doDelete()
@@ -93,8 +93,8 @@ public class UserHandlerDeleteTest {
     }
 
     @Test
-    void whenTryFindNonStoredUserThenReturnNotFound(){
-        when(userService.delete(anyString())).thenReturn(Mono.error(new NotFoundException("")));
+    void whenTryFindNonStoredAppointmentThenReturnNotFound(){
+        when(appointmentService.delete(anyString())).thenReturn(Mono.error(new NotFoundException("")));
         problemResponseRequestBuilder.withUri(uriBuilder -> uriBuilder.pathSegment("{id}").build(ObjectId.get().toString()))
                 .generateRequestWithSimpleBody()
                 .doDelete()

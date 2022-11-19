@@ -1,9 +1,10 @@
-package br.com.study.reactivecalendar.api.controller.user;
+package br.com.study.reactivecalendar.api.controller.appointment;
 
-import br.com.study.reactivecalendar.api.controller.handler.UserHandler;
+import br.com.study.reactivecalendar.api.controller.handler.AppointmentHandler;
+import br.com.study.reactivecalendar.api.controller.response.AppointmentSingleResponse;
 import br.com.study.reactivecalendar.api.controller.response.ErrorFieldResponse;
 import br.com.study.reactivecalendar.api.controller.response.ProblemResponse;
-import br.com.study.reactivecalendar.api.controller.router.UserRouter;
+import br.com.study.reactivecalendar.api.controller.router.AppointmentRouter;
 import br.com.study.reactivecalendar.api.exceptionprocessor.ApiExceptionHandlerProcessor;
 import br.com.study.reactivecalendar.api.exceptionprocessor.handler.BeanValidationHandler;
 import br.com.study.reactivecalendar.api.exceptionprocessor.handler.ConflictHandler;
@@ -14,13 +15,13 @@ import br.com.study.reactivecalendar.api.exceptionprocessor.handler.MethodNotAll
 import br.com.study.reactivecalendar.api.exceptionprocessor.handler.NotFoundHandler;
 import br.com.study.reactivecalendar.api.exceptionprocessor.handler.ReactiveCalenderHandler;
 import br.com.study.reactivecalendar.api.exceptionprocessor.handler.ResponseStatusHandler;
-import br.com.study.reactivecalendar.api.mapper.UserMapper;
-import br.com.study.reactivecalendar.api.mapper.UserMapperImpl;
-import br.com.study.reactivecalendar.core.factoryBot.document.UserDocumentFactoryBot;
+import br.com.study.reactivecalendar.api.mapper.AppointmentControllerMapper;
+import br.com.study.reactivecalendar.api.mapper.AppointmentControllerMapperImpl;
+import br.com.study.reactivecalendar.core.factoryBot.document.AppointmentDocumentFactoryBot;
 import br.com.study.reactivecalendar.domain.exception.NotFoundException;
+import br.com.study.reactivecalendar.domain.service.AppointmentService;
 import br.com.study.reactivecalendar.domain.service.BeanValidationService;
-import br.com.study.reactivecalendar.domain.service.UserService;
-import br.com.study.reactivecalendar.domain.service.query.UserQueryService;
+import br.com.study.reactivecalendar.domain.service.query.AppointmentQueryService;
 import br.com.study.reactivecalendar.utils.request.RequestBuilder;
 import com.github.javafaker.Faker;
 import org.bson.types.ObjectId;
@@ -38,7 +39,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Mono;
 
 import static br.com.study.reactivecalendar.core.RandomData.getFaker;
-import static br.com.study.reactivecalendar.utils.request.RequestBuilderInstances.noBodyResponseRequestBuilder;
+import static br.com.study.reactivecalendar.utils.request.RequestBuilderInstances.appointmentResponseRequestBuilder;
 import static br.com.study.reactivecalendar.utils.request.RequestBuilderInstances.problemResponseRequestBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -46,58 +47,61 @@ import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
 @ExtendWith({SpringExtension.class, MockitoExtension.class})
-@ContextConfiguration(classes = {UserMapperImpl.class, ApiExceptionHandlerProcessor.class,
+@ContextConfiguration(classes = {AppointmentControllerMapperImpl.class, ApiExceptionHandlerProcessor.class,
         ConflictHandler.class, MethodNotAllowHandler.class, NotFoundHandler.class, ConstraintViolationHandler.class,
         BeanValidationHandler.class, ResponseStatusHandler.class, ReactiveCalenderHandler.class, GenericHandler.class,
-        JsonProcessingHandler.class, UserHandler.class, UserRouter.class, BeanValidationService.class})
+        JsonProcessingHandler.class, AppointmentHandler.class, AppointmentRouter.class, BeanValidationService.class})
 @WebFluxTest
-public class UserHandlerDeleteTest {
+public class AppointmentHandlerFindByIdTest {
 
     @MockBean
-    private UserService userService;
+    private AppointmentService appointmentService;
     @MockBean
-    private UserQueryService userQueryService;
+    private AppointmentQueryService appointmentQueryService;
     @Autowired
-    private UserMapper userMapper;
+    private AppointmentControllerMapper appointmentControllerMapper;;
     @Autowired
     private ApplicationContext applicationContext;
 
     private final static Faker faker = getFaker();
 
-    private RequestBuilder<Void> emptyBodyResponseRequestBuilder;
+    private RequestBuilder<AppointmentSingleResponse> appointmentResponseRequestBuilder;
     private RequestBuilder<ProblemResponse> problemResponseRequestBuilder;
 
     @BeforeEach
     void setup(){
-        emptyBodyResponseRequestBuilder = noBodyResponseRequestBuilder(applicationContext, "/users/");
-        problemResponseRequestBuilder = problemResponseRequestBuilder(applicationContext, "/users/");
+        appointmentResponseRequestBuilder = appointmentResponseRequestBuilder(applicationContext, "/appointments/");
+        problemResponseRequestBuilder = problemResponseRequestBuilder(applicationContext, "/appointments/");
     }
 
     @Test
-    void deleteTest(){
-        var document = UserDocumentFactoryBot.builder().build();
-        when(userService.delete(anyString())).thenReturn(Mono.empty());
-        emptyBodyResponseRequestBuilder.withUri(uriBuilder -> uriBuilder.pathSegment("{id}").build(ObjectId.get().toString()))
-                .generateRequestWithoutBody()
-                .doDelete()
-                .isHttpStatusIsNoContent();
+    void findByIdTest(){
+        var document = AppointmentDocumentFactoryBot.builder().build();
+        when(appointmentQueryService.findById(anyString())).thenReturn(Mono.just(document));
+        appointmentResponseRequestBuilder.withUri(uriBuilder -> uriBuilder.pathSegment("{id}").build(ObjectId.get().toString()))
+                .generateRequestWithSimpleBody()
+                .doGet()
+                .isHttpStatusIsOk()
+                .assertBody(response ->assertThat(response).usingRecursiveComparison()
+                            .ignoringFields( "createdAt", "updatedAt", "guests")
+                            .isEqualTo(document));
     }
 
     @Test
     void whenUseInvalidIdThenReturnBadRequest(){
         problemResponseRequestBuilder.withUri(uriBuilder -> uriBuilder.pathSegment("{id}").build(faker.lorem().word()))
                 .generateRequestWithSimpleBody()
-                .doDelete()
+                .doGet()
                 .isHttpStatusIsBadRequest()
                 .assertBody(response -> assertThat(response.fields().stream().map(ErrorFieldResponse::name)).contains("id"));
     }
 
     @Test
-    void whenTryFindNonStoredUserThenReturnNotFound(){
-        when(userService.delete(anyString())).thenReturn(Mono.error(new NotFoundException("")));
+    void whenTryFindNonStoredAppointmentThenReturnNotFound(){
+        when(appointmentQueryService.findById(anyString())).thenReturn(Mono.error(new NotFoundException("")));
         problemResponseRequestBuilder.withUri(uriBuilder -> uriBuilder.pathSegment("{id}").build(ObjectId.get().toString()))
                 .generateRequestWithSimpleBody()
-                .doDelete()
+                .doGet()
                 .isHttpStatusIsNotFound();
     }
 
