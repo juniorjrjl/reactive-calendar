@@ -32,7 +32,7 @@ public record AppointmentRequest (
         @Period.StartDate
         OffsetDateTime startIn,
 
-        @JsonProperty("endInd")
+        @JsonProperty("endIn")
         @Schema(description = "quando a reunião irá terminar", type = "string", format = "date-time", example = "2022-04-10T10:00:00Z")
         @Period.EndDate
         OffsetDateTime endIn,
